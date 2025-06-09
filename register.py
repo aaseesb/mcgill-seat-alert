@@ -121,7 +121,7 @@ def perform_web_task():
         return
 
     courses = config.get('courses', [])
-    term = config.get('term', '202509')  # Default to Fall 2024 if not specified
+    term = config.get('term', '202601')  # Default to Fall 2024 if not specified
 
     if not courses:
         logging.info("No courses to check. Exiting.")
@@ -142,7 +142,10 @@ def perform_web_task():
         # logging.info("Clicked the Continue button.")
 
         # Select the desired term
-        term_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, f"//input[@name='radterm' and @data-term='{term}']")))
+        # term_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, f"//input[@name='radterm' and @data-term='{term}']")))
+        term_button = WebDriverWait(driver, 20).until(
+            EC.element_to_be_clickable((By.XPATH, f"//div[@class='demo-card-wide mdl-card mdl-shadow--2dp term-card' and @data-term='{term}']/a"))
+        )
         scroll_to_element(driver, term_button)
         term_button.click()
         logging.info(f"Selected term: {term}")
