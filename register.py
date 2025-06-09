@@ -20,7 +20,7 @@ PUSHOVER_USER_KEY = os.environ.get('PUSHOVER_USER_KEY')
 PUSHOVER_API_TOKEN = os.environ.get('PUSHOVER_API_TOKEN')
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def get_config():
     # Parse command-line arguments and load configuration from JSON file
@@ -94,9 +94,11 @@ def get_course_availability(driver, course):
         
         return available_sections
     except TimeoutException:
-        logging.error(f"Timeout while searching for course: {course}")
+        pass
+        # logging.error(f"Timeout while searching for course: {course}")
     except Exception as e:
-        logging.error(f"Error checking availability for {course}: {str(e)}")
+        pass
+        # logging.error(f"Error checking availability for {course}: {str(e)}")
     return []
 
 def setup_driver():
@@ -119,7 +121,7 @@ def perform_web_task():
         return
 
     courses = config.get('courses', [])
-    term = config.get('term', '202409')  # Default to Fall 2024 if not specified
+    # term = config.get('term', '202409')  # Default to Fall 2024 if not specified
 
     if not courses:
         logging.info("No courses to check. Exiting.")
@@ -134,10 +136,10 @@ def perform_web_task():
         load_webpage(driver, "https://vsb.mcgill.ca/vsb/criteria.jsp?access=0&lang=en&tip=1&page=results&scratch=0&term=0&sort=none&filters=iiiiiiiii&bbs=&ds=&cams=Distance_Downtown_Macdonald_Off-Campus&locs=any&isrts=&course_0_0=&sa_0_0=&cs_0_0=--+All+--&cpn_0_0=&csn_0_0=&ca_0_0=&dropdown_0_0=al&ig_0_0=0&rq_0_0=")
         
         # Click the Continue button
-        continue_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//input[@type='button' and @value='Continue']")))
-        scroll_to_element(driver, continue_button)
-        continue_button.click()
-        logging.info("Clicked the Continue button.")
+        # continue_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//input[@type='button' and @value='Continue']")))
+        # scroll_to_element(driver, continue_button)
+        # continue_button.click()
+        # logging.info("Clicked the Continue button.")
 
         # Select the desired term
         term_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, f"//input[@name='radterm' and @data-term='{term}']")))
