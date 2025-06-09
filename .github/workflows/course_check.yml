@@ -1,8 +1,8 @@
 name: Check Course Availability
 
 on:
-  # schedule:
-  #   - cron: '*/10 * * * *'  # Runs every hour
+  schedule:
+    - cron: '*/10 * * * *'  # Runs every hour
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
