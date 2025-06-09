@@ -161,7 +161,7 @@ def perform_web_task():
             course_input.clear()
             course_input.send_keys(course)
             
-            select_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "addCourseButton")))
+            select_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "results_focus_0")))
             scroll_to_element(driver, select_button)
             select_button.click()
             
