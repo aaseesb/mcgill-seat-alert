@@ -184,10 +184,12 @@ def perform_web_task():
         for course in courses:
             available_sections = get_course_availability(driver, course)
             if available_sections:
-                available_courses[course] = available_sections
+                # available_courses[course] = available_sections
                 logging.info(f"Course {course} is available:")
                 for crn, availability_type in available_sections:
-                    logging.info(f"  CRN: {crn}, Availability: {availability_type}")
+                    if crn == '2657':
+                        available_courses[course] = available_sections
+                        logging.info(f"  CRN: {crn}, Availability: {availability_type}")
             else:
                 logging.info(f"Course {course} is not available")
 
