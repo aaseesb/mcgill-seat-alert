@@ -13,13 +13,14 @@ import json
 import argparse
 import logging
 from requests.exceptions import RequestException
+import traceback
 
 # Use environment variables for Pushover credentials
 PUSHOVER_USER_KEY = os.environ.get('PUSHOVER_USER_KEY')
 PUSHOVER_API_TOKEN = os.environ.get('PUSHOVER_API_TOKEN')
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def get_config():
     # Parse command-line arguments and load configuration from JSON file
@@ -200,6 +201,7 @@ def perform_web_task():
         logging.info("All courses have been checked for availability.")
     except Exception as e:
         logging.error(f"An error occurred during web task: {str(e)}")
+        logging.debug("Traceback:\n%s", traceback.format_exc())
     finally:
         driver.quit()
 
