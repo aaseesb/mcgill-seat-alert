@@ -189,7 +189,7 @@ def perform_web_task():
                 for crn, availability_type in available_sections:
                     if crn == '2657':
                         available_courses[course] = available_sections
-                        logging.info(f"  CRN: {crn}, Availability: {availability_type}")
+                    logging.info(f"  CRN: {crn}, Availability: {availability_type}")
             else:
                 logging.info(f"Course {course} is not available")
 
