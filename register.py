@@ -121,7 +121,7 @@ def perform_web_task():
         return
 
     courses = config.get('courses', [])
-    # term = config.get('term', '202409')  # Default to Fall 2024 if not specified
+    term = config.get('term', '202602')  # Default to Fall 2024 if not specified
 
     if not courses:
         logging.info("No courses to check. Exiting.")
