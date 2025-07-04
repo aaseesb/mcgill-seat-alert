@@ -143,7 +143,6 @@ def perform_web_task():
         available_courses = {}
         for course in courses:
             available_sections = get_course_availability(driver, course)
-            logging.info(available_sections)
             if available_sections:
                 # available_courses[course] = available_sections
                 logging.info(f"Course {course} is available:")
