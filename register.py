@@ -71,8 +71,17 @@ def get_course_availability(driver, course):
         logging.info(f"Found course box for: {course}")
         scroll_to_element(driver, course_box)
         
-        sections = course_box.find_elements(By.XPATH, ".//div[contains(@class, 'selection_row')]")
+        
+        temp_sections = course_box.find_elements(By.XPATH, ".//div[contains(@class, 'selection_row')]")
+        sections = temp_sections
         logging.info(f"Found {len(sections)} sections for course: {course}")
+
+        nextPossible = click_next_section();
+        while nextPossible:
+            temp_sections = course_box.find_elements(By.XPATH, ".//div[contains(@class, 'selection_row')]")
+            sections.extend(temp_sections)
+            logging.info(f"Found {len(sections)} sections for course: {course}")
+
         
         available_sections = []
         
@@ -214,6 +223,25 @@ def perform_web_task():
         logging.debug("Traceback:\n%s", traceback.format_exc())
     finally:
         driver.quit()
+
+def click_next_section():
+    try:
+        # Wait for a clickable "Next Result" button
+        next_result_button = WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable((By.XPATH, "//a[contains(@class, 'results-action-next') and not(contains(@class, 'results-nava-disabled'))]"))
+        )
+        scroll_to_element(driver, next_result_button)
+        try:
+            next_result_button.click()
+        except Exception:
+            driver.execute_script("arguments[0].click();", next_result_button)
+        
+        logging.info("Clicked the Next Result button.")
+        return True
+    
+    except TimeoutException:
+        return False
+        logging.info("Next Result button is no longer clickable (disabled). Stopping loop.")
 
 if __name__ == "__main__":
     perform_web_task()
