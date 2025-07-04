@@ -71,38 +71,13 @@ def get_course_availability(driver, course):
         logging.info(f"Found course box for: {course}")
         scroll_to_element(driver, course_box)
         
-        
-        temp_sections = course_box.find_elements(By.XPATH, ".//div[contains(@class, 'selection_row')]")
-        sections = temp_sections
+        sections = course_box.find_elements(By.XPATH, ".//div[contains(@class, 'selection_row')]")
+        logging.info(f"sections {sections}")
         logging.info(f"Found {len(sections)} sections for course: {course}")
-
-        nextPossible = click_next_section(driver);
-        while nextPossible:
-            try:
-                logging.info(f"Searching for course: {course}")
-                wait = WebDriverWait(driver, 20)
-                course_box = wait.until(
-                    EC.presence_of_element_located((By.XPATH, f"//div[contains(@class, 'course_box') and contains(., '{course}')]"))
-                )
-                logging.info(f"Found course box for: {course}")
-                scroll_to_element(driver, course_box)
-            except Exception as e:
-                logging.info(f"couldn't find course box {str(e)}")
-
-            try:
-                temp_sections = course_box.find_elements(By.XPATH, ".//div[contains(@class, 'selection_row')]")
-                sections.extend(temp_sections)
-                logging.info(f"Found {len(sections)} sections for course: {course}")
-                nextPossible = click_next_section(driver);
-            except Exception as e:
-                logging.info(f"couldn't find course info {str(e)}")
-            logging.info(nextPossible)
-
         
         available_sections = []
         
         for section in sections:
-            logging.info(f"section {section.text}")
             try:
                 if "Lec" in section.text:
                     # Extract CRN and check for open seats or waitlist availability
@@ -239,28 +214,6 @@ def perform_web_task():
         logging.debug("Traceback:\n%s", traceback.format_exc())
     finally:
         driver.quit()
-
-def click_next_section(driver):
-    try:
-        # Wait for a clickable "Next Result" button
-        next_result_button = WebDriverWait(driver, 5).until(
-            EC.element_to_be_clickable((By.XPATH, "//a[contains(@class, 'results-action-next') and not(contains(@class, 'results-nava-disabled'))]"))
-        )
-        scroll_to_element(driver, next_result_button)
-        try:
-            next_result_button.click()
-        except Exception:
-            driver.execute_script("arguments[0].click();", next_result_button)
-        
-        logging.info("Clicked the Next Result button.")
-        return True
-    
-    except TimeoutException:
-        logging.info("Next Result button is no longer clickable (disabled). Stopping loop.")
-        return False
-    
-    except Exception as e:
-                logging.info(f"click next button didn't work {str(e)}")
 
 if __name__ == "__main__":
     perform_web_task()
