@@ -136,56 +136,14 @@ def perform_web_task():
     
     try:
         # Navigate to the course selection page
-        load_webpage(driver, "https://vsb.mcgill.ca/vsb/criteria.jsp?access=0&lang=en&tip=1&page=results&scratch=0&term=0&sort=none&filters=iiiiiiiii&bbs=&ds=&locs=any&isrts=&course_0_0=&sa_0_0=&cs_0_0=--+All+--&cpn_0_0=&csn_0_0=&ca_0_0=&dropdown_0_0=al&ig_0_0=0&rq_0_0=")
-        
-        # Click the Continue button
-        # continue_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//input[@type='button' and @value='Continue']")))
-        # scroll_to_element(driver, continue_button)
-        # continue_button.click()
-        # logging.info("Clicked the Continue button.")
-
-        # Select the desired term
-        # term_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, f"//input[@name='radterm' and @data-term='{term}']")))
-        term_button = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((By.XPATH, f"//div[@class='demo-card-wide mdl-card mdl-shadow--2dp term-card' and @data-term='{term}']/a"))
-        )
-        scroll_to_element(driver, term_button)
-        term_button.click()
-        logging.info(f"Selected term: {term}")
-
-        time.sleep(5)
-
-        # Enter and select each course
-        for course in courses:
-            logging.info(f"Entering course: {course}")
-            
-            course_input = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "code_number")))
-            scroll_to_element(driver, course_input)
-            course_input.clear()
-            course_input.send_keys(course)
-            
-            select_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "results_focus_0")))
-            scroll_to_element(driver, select_button)
-            select_button.click()
-            
-            logging.info(f"Selected course: {course}")
-            time.sleep(3)
-
-        logging.info("All courses entered and selected.")
-
-        # Generate schedules
-        generate_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "do_search")))
-        scroll_to_element(driver, generate_button)
-        generate_button.click()
-        logging.info("Clicked 'Generate Schedules' button.")
-
-        time.sleep(15)
+        load_webpage(driver, "https://vsb.mcgill.ca/criteria.jsp?access=0&lang=en&tip=0&page=results&scratch=0&advice=0&legend=1&term=202601&sort=none&filters=iiiiiiiiii&bbs=&ds=&cams=DOWNTOWN_OFF-CAMPUS_DISTANCE_MACDONALD&locs=any&isrts=any&ses=any&pl=&pac=1&course_0_0=FACC-300&va_0_0=e602&sa_0_0=&cs_0_0=--202601_2657-2663-&cpn_0_0=&csn_0_0=&ca_0_0=&dropdown_0_0=al&ig_0_0=0&rq_0_0=&bg_0_0=0&cr_0_0=&ss_0_0=0&sbc_0_0=0")
 
         # Check availability for each course
         logging.info("Checking course availability...")
         available_courses = {}
         for course in courses:
             available_sections = get_course_availability(driver, course)
+            logging.info(available_sections)
             if available_sections:
                 # available_courses[course] = available_sections
                 logging.info(f"Course {course} is available:")
