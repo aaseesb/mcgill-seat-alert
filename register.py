@@ -72,7 +72,7 @@ def get_course_availability(driver, course):
         scroll_to_element(driver, course_box)
         
         sections = course_box.find_elements(By.XPATH, ".//div[contains(@class, 'selection_row')]")
-        logging.info(f"sections {sections}")
+        logging.info(f"sections {section.text}")
         logging.info(f"Found {len(sections)} sections for course: {course}")
         
         available_sections = []
