@@ -78,18 +78,25 @@ def get_course_availability(driver, course):
 
         nextPossible = click_next_section(driver);
         while nextPossible:
-            logging.info(f"Searching for course: {course}")
-            wait = WebDriverWait(driver, 20)
-            course_box = wait.until(
-                EC.presence_of_element_located((By.XPATH, f"//div[contains(@class, 'course_box') and contains(., '{course}')]"))
-            )
-            logging.info(f"Found course box for: {course}")
-            scroll_to_element(driver, course_box)
+            try:
+                logging.info(f"Searching for course: {course}")
+                wait = WebDriverWait(driver, 20)
+                course_box = wait.until(
+                    EC.presence_of_element_located((By.XPATH, f"//div[contains(@class, 'course_box') and contains(., '{course}')]"))
+                )
+                logging.info(f"Found course box for: {course}")
+                scroll_to_element(driver, course_box)
+            except Exception as e:
+                logging.info(f"couldn't find course box {str(e)}")
 
-            temp_sections = course_box.find_elements(By.XPATH, ".//div[contains(@class, 'selection_row')]")
-            sections.extend(temp_sections)
-            logging.info(f"Found {len(sections)} sections for course: {course}")
-            nextPossible = click_next_section(driver);
+            try:
+                temp_sections = course_box.find_elements(By.XPATH, ".//div[contains(@class, 'selection_row')]")
+                sections.extend(temp_sections)
+                logging.info(f"Found {len(sections)} sections for course: {course}")
+                nextPossible = click_next_section(driver);
+            except Exception as e:
+                logging.info(f"couldn't find course info {str(e)}")
+            logging.info(nextPossible)
 
         
         available_sections = []
@@ -249,12 +256,11 @@ def click_next_section(driver):
         return True
     
     except TimeoutException:
-        return False
         logging.info("Next Result button is no longer clickable (disabled). Stopping loop.")
-
+        return False
+    
     except Exception as e:
-        pass
-        logging.error(f"click next error: {str(e)}")
+                logging.info(f"click next button didn't work {str(e)}")
 
 if __name__ == "__main__":
     perform_web_task()
