@@ -15,6 +15,7 @@ import logging
 from requests.exceptions import RequestException
 import traceback
 
+
 # Use environment variables for Pushover credentials
 PUSHOVER_USER_KEY = os.environ.get('PUSHOVER_USER_KEY')
 PUSHOVER_API_TOKEN = os.environ.get('PUSHOVER_API_TOKEN')
