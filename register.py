@@ -76,7 +76,7 @@ def get_course_availability(driver, course):
         sections = temp_sections
         logging.info(f"Found {len(sections)} sections for course: {course}")
 
-        nextPossible = click_next_section();
+        nextPossible = click_next_section(driver);
         while nextPossible:
             temp_sections = course_box.find_elements(By.XPATH, ".//div[contains(@class, 'selection_row')]")
             sections.extend(temp_sections)
@@ -224,7 +224,7 @@ def perform_web_task():
     finally:
         driver.quit()
 
-def click_next_section():
+def click_next_section(driver):
     try:
         # Wait for a clickable "Next Result" button
         next_result_button = WebDriverWait(driver, 5).until(
