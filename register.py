@@ -97,10 +97,10 @@ def get_course_availability(driver, course):
         return available_sections
     except TimeoutException:
         pass
-        # logging.error(f"Timeout while searching for course: {course}")
+        logging.error(f"Timeout while searching for course: {course}")
     except Exception as e:
         pass
-        # logging.error(f"Error checking availability for {course}: {str(e)}")
+        logging.error(f"Error checking availability for {course}: {str(e)}")
     return []
 
 def setup_driver():
