@@ -81,6 +81,7 @@ def get_course_availability(driver, course):
                 if "Lec" in section.text:
                     # Extract CRN and check for open seats or waitlist availability
                     crn = section.find_element(By.XPATH, ".//span[@class='crn_value']").text
+                    logging.info(f"crns {crn}")
                     
                     seats_element = section.find_element(By.XPATH, ".//span[contains(@class, 'leftnclear') and contains(., 'Seats:')]")
                     if "Full" not in seats_element.text:
@@ -188,7 +189,7 @@ def perform_web_task():
                 # available_courses[course] = available_sections
                 logging.info(f"Course {course} is available:")
                 for crn, availability_type in available_sections:
-                    if crn == '2657':
+                    if crn == '2657' or crn == '2656':
                         available_courses[course] = available_sections
                     logging.info(f"  CRN: {crn}, Availability: {availability_type}")
             else:
