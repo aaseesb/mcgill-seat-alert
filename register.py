@@ -78,6 +78,14 @@ def get_course_availability(driver, course):
 
         nextPossible = click_next_section(driver);
         while nextPossible:
+            logging.info(f"Searching for course: {course}")
+            wait = WebDriverWait(driver, 20)
+            course_box = wait.until(
+                EC.presence_of_element_located((By.XPATH, f"//div[contains(@class, 'course_box') and contains(., '{course}')]"))
+            )
+            logging.info(f"Found course box for: {course}")
+            scroll_to_element(driver, course_box)
+
             temp_sections = course_box.find_elements(By.XPATH, ".//div[contains(@class, 'selection_row')]")
             sections.extend(temp_sections)
             logging.info(f"Found {len(sections)} sections for course: {course}")
