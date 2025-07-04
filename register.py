@@ -72,12 +72,12 @@ def get_course_availability(driver, course):
         scroll_to_element(driver, course_box)
         
         sections = course_box.find_elements(By.XPATH, ".//div[contains(@class, 'selection_row')]")
-        logging.info(f"sections {section.text}")
         logging.info(f"Found {len(sections)} sections for course: {course}")
         
         available_sections = []
         
         for section in sections:
+            logging.info(f"section {section.text}")
             try:
                 if "Lec" in section.text:
                     # Extract CRN and check for open seats or waitlist availability
