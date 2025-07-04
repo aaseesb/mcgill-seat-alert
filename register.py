@@ -81,6 +81,7 @@ def get_course_availability(driver, course):
             temp_sections = course_box.find_elements(By.XPATH, ".//div[contains(@class, 'selection_row')]")
             sections.extend(temp_sections)
             logging.info(f"Found {len(sections)} sections for course: {course}")
+            nextPossible = click_next_section(driver);
 
         
         available_sections = []
@@ -242,6 +243,10 @@ def click_next_section(driver):
     except TimeoutException:
         return False
         logging.info("Next Result button is no longer clickable (disabled). Stopping loop.")
+
+    except Exception as e:
+        pass
+        logging.error(f"click next error: {str(e)}")
 
 if __name__ == "__main__":
     perform_web_task()
