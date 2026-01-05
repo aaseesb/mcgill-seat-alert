@@ -136,7 +136,7 @@ def perform_web_task():
     
     try:
         # Navigate to the course selection page
-        load_webpage(driver, "https://vsb.mcgill.ca/criteria.jsp?access=0&lang=en&tip=0&page=results&scratch=0&advice=0&legend=1&term=202601&sort=none&filters=iiiiiiiiii&bbs=&ds=&cams=DOWNTOWN_OFF-CAMPUS_DISTANCE_MACDONALD&locs=any&isrts=any&ses=any&pl=&pac=1&course_0_0=FACC-300&va_0_0=e602&sa_0_0=&cs_0_0=--202601_2657-2663-&cpn_0_0=&csn_0_0=&ca_0_0=&dropdown_0_0=al&ig_0_0=0&rq_0_0=&bg_0_0=0&cr_0_0=&ss_0_0=0&sbc_0_0=0")
+        load_webpage(driver, "https://vsb.mcgill.ca/criteria.jsp?access=0&lang=en&tip=0&page=results&scratch=0&advice=0&legend=1&term=202601&sort=none&filters=iiiiiiiiii&bbs=&ds=&cams=DOWNTOWN_OFF-CAMPUS_DISTANCE_MACDONALD&locs=any&isrts=any&ses=any&pl=&pac=1&course_0_0=MECH-321&va_0_0=862f&sa_0_0=&cs_0_0=--202601_3282-3283-&cpn_0_0=&csn_0_0=&ca_0_0=&dropdown_0_0=al&ig_0_0=0&rq_0_0=&bg_0_0=0&cr_0_0=&ss_0_0=0&sbc_0_0=0")
 
         # Check availability for each course
         logging.info("Checking course availability...")
