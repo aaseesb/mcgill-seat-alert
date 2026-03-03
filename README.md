@@ -2,9 +2,23 @@
 
 An automated tool to check course availability at McGill University and send notifications when courses become available.
 
+> This project is a fork of the original [McGill Seat Alert](https://github.com/hanzili/mcgill-seat-alert) by [hanzili](https://github.com/hanzili), with modifications to support:
+> - Optional filtering for specific CRNs
+> - Updated for the current McGill VSB course selection page
+
 ## Description
 
-This project provides a script that automatically checks the availability of specified courses at McGill University using GitHub Actions. When a course becomes available, it sends a notification via Pushover.
+This script automatically checks the availability of courses at McGill University.
+It supports:
+- Monitoring multiple courses in a single page load
+- Optional filtering for specific CRNs per course
+- Notifications when sections have open seats
+
+This script automatically checks the availability of specified courses at McGill University using GitHub Actions. When a course becomes available, it sends a notification via Pushover.
+
+### Automation via GitHub Actions
+- The workflow runs automatically every 10 minutes to monitor course availability.
+- This acts as a lightweight CI/CD process, letting you receive notifications without manually running the script.
 
 ## Setup
 
@@ -26,12 +40,16 @@ This project provides a script that automatically checks the availability of spe
    - Edit the `config.json` file in the repository:
      ```json
      {
-         "courses": ["COURSE1", "COURSE2"],
+         "courses": [
+              { "code": "COURSE1", "crns": ["CRN1", "CRN2"] },
+              { "code": "COURSE2" }
+           ],
          "term": "YYYYMM"
      }
      ```
    - Replace `"COURSE1"`, `"COURSE2"` with the courses you want to check
-   - Set the `"term"` to the desired semester (e.g., "202409" for Fall 2024)
+   - CRNs are optional per course. If omitted, all sections of that course are monitored
+   - Set the `"term"` to the desired semester (e.g., "202409" for Fall 2024, "202601" for Winter 2026)
 
 5. Enable GitHub Actions:
    - Go to the "Actions" tab in your forked repository
