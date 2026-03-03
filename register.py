@@ -140,26 +140,15 @@ def perform_web_task():
     driver = setup_driver()
     
     try:
-        for course in courses:
-            url = build_url(course["code"], term)
-            load_webpage(driver, url)
-
-            available_sections = get_course_availability(
-                driver,
-                course["code"],
-                course["crns"]
-            )
-
         # Check availability for each course
         logging.info("Checking course availability...")
-
-        available_courses = {}
 
         # Retrieve webpage with all courses
         url = build_url(courses, term)
         load_webpage(driver, url)
 
         # Extract availability
+        available_courses = {}
         for course in courses:
             code = course["code"]
             target_crns = course["crns"]
