@@ -1,4 +1,6 @@
 {
-    "courses": ["MECH 321"],
+    "courses": [
+        { "code": "MECH 321", "crns": ["3282"] }
+    ],
     "term": "202601"
 }

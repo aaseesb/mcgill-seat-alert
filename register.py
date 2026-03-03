@@ -60,7 +60,7 @@ def scroll_to_element(driver, element):
     actions = ActionChains(driver)
     actions.move_to_element(element).perform()
 
-def get_course_availability(driver, course):
+def get_course_availability(driver, course, target_crns=None):
     # Check availability for a specific course
     try:
         logging.info(f"Searching for course: {course}")
@@ -83,6 +83,10 @@ def get_course_availability(driver, course):
                     # Extract CRN and check for open seats or waitlist availability
                     crn = section.find_element(By.XPATH, ".//span[@class='crn_value']").text
                     logging.info(f"crns {crn}")
+
+                    # filter crns
+                    if target_crns and crn not in target_crns:
+                        continue
                     
                     seats_element = section.find_element(By.XPATH, ".//span[contains(@class, 'leftnclear') and contains(., 'Seats:')]")
                     if "Full" not in seats_element.text:
@@ -123,8 +127,9 @@ def perform_web_task():
     if not config:
         return
 
-    courses = config.get('courses', [])
-    term = config.get('term', '202601')  # Default to Fall 2024 if not specified
+    raw_courses = config.get('courses', [])
+    courses = normalize_courses(raw_courses)
+    term = config.get('term', '202601')  # Default to winter 2026 if not specified
 
     if not courses:
         logging.info("No courses to check. Exiting.")
@@ -135,20 +140,37 @@ def perform_web_task():
     driver = setup_driver()
     
     try:
-        # Navigate to the course selection page
-        load_webpage(driver, "https://vsb.mcgill.ca/criteria.jsp?access=0&lang=en&tip=0&page=results&scratch=0&advice=0&legend=1&term=202601&sort=none&filters=iiiiiiiiii&bbs=&ds=&cams=DOWNTOWN_OFF-CAMPUS_DISTANCE_MACDONALD&locs=any&isrts=any&ses=any&pl=&pac=1&course_0_0=MECH-321&va_0_0=862f&sa_0_0=&cs_0_0=--202601_3282-3283-&cpn_0_0=&csn_0_0=&ca_0_0=&dropdown_0_0=al&ig_0_0=0&rq_0_0=&bg_0_0=0&cr_0_0=&ss_0_0=0&sbc_0_0=0")
+        for course in courses:
+            url = build_url(course["code"], term)
+            load_webpage(driver, url)
+
+            available_sections = get_course_availability(
+                driver,
+                course["code"],
+                course["crns"]
+            )
 
         # Check availability for each course
         logging.info("Checking course availability...")
+
         available_courses = {}
+
+        # Retrieve webpage with all courses
+        url = build_url(courses, term)
+        load_webpage(driver, url)
+
+        # Extract availability
         for course in courses:
-            available_sections = get_course_availability(driver, course)
+            code = course["code"]
+            target_crns = course["crns"]
+
+            available_sections = get_course_availability(driver, code, target_crns)
+
             if available_sections:
-                # available_courses[course] = available_sections
+                available_courses[code] = available_sections
                 logging.info(f"Course {course} is available:")
+
                 for crn, availability_type in available_sections:
-                    if crn == '3282':
-                        available_courses[course] = available_sections
                     logging.info(f"  CRN: {crn}, Availability: {availability_type}")
             else:
                 logging.info(f"Course {course} is not available")
@@ -157,8 +179,8 @@ def perform_web_task():
         if available_courses:
             notification_title = "Course Availability Alert"
             notification_body = "The following courses are available:\n"
-            for course, sections in available_courses.items():
-                notification_body += f"{course}:\n"
+            for code, sections in available_courses.items():
+                notification_body += f"{code}:\n"
                 for crn, availability_type in sections:
                     notification_body += f"  CRN: {crn}, Availability: {availability_type}\n"
             send_notification(notification_title, notification_body)
@@ -171,6 +193,35 @@ def perform_web_task():
         logging.debug("Traceback:\n%s", traceback.format_exc())
     finally:
         driver.quit()
+
+def build_url(courses, term):
+    base = (
+        f"https://vsb.mcgill.ca/criteria.jsp?"
+        f"access=0&lang=en&tip=1&page=criteria&scratch=0&advice=0&legend=1"
+        f"&term={term}&sort=none&filters=iiiiiiiiii"
+        "&bbs=&ds=&cams=DISTANCE_DOWNTOWN_MACDONALD_OFF-CAMPUS"
+        "&locs=any&isrts=any&ses=any&pl=&pac=1"
+    )
+
+    for i, course in enumerate(courses):
+        base+=f"&course_{i}_0={course['code']}"
+
+    return base
+
+def normalize_courses(raw_courses):
+    normalized = []
+
+    for course in raw_courses:
+        if isinstance(course, str):
+            normalized.append({"code": course, "crns": None})
+
+        elif isinstance(course, dict):
+            normalized.append({
+                "code": course.get("code"),
+                "crns": course.get("crns")
+            })
+    
+    return normalized
 
 if __name__ == "__main__":
     perform_web_task()
