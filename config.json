@@ -1,6 +1,6 @@
 {
     "courses": [
-        { "code": "ECSE 316", "crns": ["2564"] }
+        { "code": "ECSE 316" }
     ],
     "term": "202609"
 }
