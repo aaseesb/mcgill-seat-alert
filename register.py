@@ -74,8 +74,10 @@ def get_course_availability(driver, course, target_crns=None):
     try:
         logging.info(f"Searching for course: {course}")
         wait = WebDriverWait(driver, 20)
+        course_dept, course_number = course.split
+        course_box_name = f"{course_dept}<br>{course_number}"
         course_box = wait.until(
-            EC.presence_of_element_located((By.XPATH, f"//div[contains(@class, 'course_box') and contains(., '{course}')]"))
+            EC.presence_of_element_located((By.XPATH, f"//div[contains(@class, 'cbox') and contains(., '{course_box_name}')]"))
         )
         logging.info(f"Found course box for: {course}")
         scroll_to_element(driver, course_box)
