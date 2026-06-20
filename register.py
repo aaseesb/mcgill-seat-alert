@@ -200,6 +200,7 @@ def perform_web_task():
         driver.quit()
 
 def build_url(courses, term):
+    term = term.replace(' ', '-')
     base = (
         f"https://vsb.mcgill.ca/criteria.jsp?"
         f"access=0&lang=en&tip=1&page=criteria&scratch=0&advice=0&legend=1"
