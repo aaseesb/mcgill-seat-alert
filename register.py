@@ -5,20 +5,17 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.action_chains import ActionChains
-from pushover_complete import PushoverAPI
 from tenacity import retry, stop_after_attempt, wait_fixed
 import os
-import time
+import requests
 import json
 import argparse
 import logging
-from requests.exceptions import RequestException
 import traceback
 
-
-# Use environment variables for Pushover credentials
-PUSHOVER_USER_KEY = os.environ.get('PUSHOVER_USER_KEY')
-PUSHOVER_API_TOKEN = os.environ.get('PUSHOVER_API_TOKEN')
+# Use environment variables for credentials
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
+EMAIL = os.environ["ALERT_EMAIL"]
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -46,14 +43,26 @@ def load_webpage(driver, url):
     driver.get(url)
     logging.info("Webpage loaded successfully.")
 
-def send_notification(title, message):
-    # Send push notification using Pushover API
+def send_email(recipient, subject, body):
     try:
-        pushover = PushoverAPI(PUSHOVER_API_TOKEN)
-        pushover.send_message(PUSHOVER_USER_KEY, message, title=title)
-        logging.info(f"Notification sent: {title}")
-    except Exception as e:
-        logging.error(f"Failed to send notification: {str(e)}")
+        response = requests.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {RESEND_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "from": "Seat Alert <onboarding@resend.dev>",
+                "to": [recipient],
+                "subject": f"{subject}",
+                "html": f"{body}"
+            }
+        )
+        response.raise_for_status(f"Email sent successfully to {recipient}")
+        return True
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Failed to send email to {recipient}: {e}")
+        return False
 
 def scroll_to_element(driver, element):
     # Scroll to the specified element to ensure it's in view
@@ -129,7 +138,7 @@ def perform_web_task():
 
     raw_courses = config.get('courses', [])
     courses = normalize_courses(raw_courses)
-    term = config.get('term', '202601')  # Default to winter 2026 if not specified
+    term = config.get('term', '202701')  # Default to winter 2027 if not specified
 
     if not courses:
         logging.info("No courses to check. Exiting.")
@@ -166,13 +175,20 @@ def perform_web_task():
 
         # Send notification if any courses are available
         if available_courses:
-            notification_title = "Course Availability Alert"
-            notification_body = "The following courses are available:\n"
+            num_sections = sum(len(sections) for sections in available_courses.values())
+            email_subject = "{} Course Section Available"
+            email_body = """
+                <h2>Course Availability Alert</h2>
+                <p>The following sections are available:</p>
+                <ul>
+            """
             for code, sections in available_courses.items():
-                notification_body += f"{code}:\n"
+                email_body += f"<li><strong>{code}<li><strong>"
                 for crn, availability_type in sections:
-                    notification_body += f"  CRN: {crn}, Availability: {availability_type}\n"
-            send_notification(notification_title, notification_body)
+                    email_body += f"<li>  • CRN: {crn}: {availability_type}</li>"
+                email_body += "</ul></li>"
+            email_body += "</ul>"
+            send_email(EMAIL, email_subject, email_body)
         else:
             logging.info("No courses are currently available.")
 
