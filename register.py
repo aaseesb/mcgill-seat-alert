@@ -69,22 +69,64 @@ def scroll_to_element(driver, element):
     actions = ActionChains(driver)
     actions.move_to_element(element).perform()
 
+def find_course_section(row):
+    logging.info(f"Searching for course: {course}")
+    wait = WebDriverWait(driver, 20)
+    course_dept, course_number = course.split(maxsplit=1)
+    target = f"{course_dept} {course_number}"
+    course_boxes = driver.find_elements(By.CLASS_NAME, "legend_box")
+    course_box = None
+    for box in course_boxes:
+        title_elem = box.find_element(By.ClASS_NAME, "header_cell")
+        text = title_elem.text.strip()
+
+        logging.info(f"{text} detected")
+        if text == target:
+            course_box = box
+            break
+    if not course_box:
+        logging.error(f"Course box not found: {course}")
+        return []
+    
+    logging.info(f"Found course box for: {course}")
+    scroll_to_element(driver, course_box)
+    
+    section = course_box.find_element(By.CLASS_NAME, "inner_legend_table")
+    crn = section.find_element(By.CLASS_NAME, "crn_value").text.strip()
+    try:
+        status = section.find_element(By.CLASS_NAME, "fullText").text.strip()
+    except NoSuchElementException:
+        try:
+            status = section.find_element(By.CLASS_NAME, "seatText").text.strip()
+        except NoSuchElementException:
+            status = None
+
 def get_course_availability(driver, course, target_crns=None):
     # Check availability for a specific course
     try:
         logging.info(f"Searching for course: {course}")
         wait = WebDriverWait(driver, 20)
-        course_dept, course_number = course.split
-        course_box_name = f"{course_dept}<br>{course_number}"
-        course_box = wait.until(
-            EC.presence_of_element_located((By.XPATH, f"//div[contains(@class, 'cbox') and contains(., '{course_box_name}')]"))
-        )
+        course_dept, course_number = course.split(maxsplit=1)
+        target = f"{course_dept} {course_number}"
+        course_boxes = driver.find_elements(By.CLASS_NAME, "legend_box")
+        course_box = None
+        for box in course_boxes:
+            title_elem = box.find_element(By.ClASS_NAME, "header_cell")
+            text = title_elem.text.strip()
+
+            logging.info(f"{text} detected")
+            if text == target:
+                course_box = box
+                break
+        if not course_box:
+            logging.error(f"Course box not found: {course}")
+            return []
+        
         logging.info(f"Found course box for: {course}")
         scroll_to_element(driver, course_box)
         
-        sections = course_box.find_elements(By.XPATH, ".//div[contains(@class, 'selection_row')]")
-        logging.info(f"sections {sections}")
-        logging.info(f"Found {len(sections)} sections for course: {course}")
+        section = course_box.find_element(By.CLASS_NAME, "inner_legend_table")
+        status = section.find_element(By.XPATH, ".//td[@title]").get_attribute("title")
         
         available_sections = []
         
