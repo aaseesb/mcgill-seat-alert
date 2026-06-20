@@ -41,7 +41,7 @@ def get_config():
 def load_webpage(driver, url):
     # Load webpage with retry mechanism in case of failure
     driver.get(url)
-    logging.info("Webpage loaded successfully.")
+    logging.info("Webpage {url} loaded successfully.")
 
 def send_email(recipient, subject, body):
     try:
