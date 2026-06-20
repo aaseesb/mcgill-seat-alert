@@ -41,13 +41,13 @@ This script automatically checks the availability of specified courses at McGill
      ```json
      {
          "courses": [
-              { "code": "COURSE1", "crns": ["CRN1", "CRN2"] },
-              { "code": "COURSE2" }
+              { "code": "COURSE-1", "crns": ["CRN1", "CRN2"] },
+              { "code": "COURSE-2" }
            ],
          "term": "YYYYMM"
      }
      ```
-   - Replace `"COURSE1"`, `"COURSE2"` with the courses you want to check
+   - Replace `"COURSE-1"`, `"COURSE-2"` with the courses you want to check
    - CRNs are optional per course. If omitted, all sections of that course are monitored
    - Set the `"term"` to the desired semester (e.g., "202409" for Fall 2024, "202601" for Winter 2026)
 
